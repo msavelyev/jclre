@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class Analyzer {
+public class Modifier {
 
-    private static final Logger log = LoggerFactory.getLogger( Analyzer.class );
+    private static final Logger log = LoggerFactory.getLogger( Modifier.class );
 
     public void modifyReadersAndWriters( CtClass ctClass, final List<String> fieldNames ) {
         try {

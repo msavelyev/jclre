@@ -1,8 +1,6 @@
 package jclre.tool;
 
 import javassist.*;
-import javassist.bytecode.FieldInfo;
-import jclre.bytecode.Analyzer;
 import jclre.cache.FieldsCache;
 import jclre.cache.field.FieldDefinition;
 import jclre.modify.ClassFields;
@@ -12,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,12 +20,12 @@ public class JclreHelper {
 
     private ClassPool classPool;
     private FieldsCache fieldsCache;
-    private Analyzer analyzer;
+    private jclre.bytecode.Modifier modifier;
 
-    public JclreHelper( ClassPool classPool, FieldsCache fieldsCache, Analyzer analyzer ) {
+    public JclreHelper( ClassPool classPool, FieldsCache fieldsCache, jclre.bytecode.Modifier modifier ) {
         this.classPool = classPool;
         this.fieldsCache = fieldsCache;
-        this.analyzer = analyzer;
+        this.modifier = modifier;
     }
 
     public String standardizeClassName( String classNameWithSlashes ) {
@@ -52,7 +49,7 @@ public class JclreHelper {
     public void addFields( CtClass ctClass ) {
         try {
             CtField field = new CtField( classPool.get( ClassFields.class.getName() ), "___ADDED_FIELDS___", ctClass );
-            field.setModifiers( Modifier.PUBLIC );
+            field.setModifiers( java.lang.reflect.Modifier.PUBLIC );
             ctClass.addField(
                 field,
                 "jclre.instrumentation.Jclre.getInstance().getFieldsCache().create( \"" + ctClass.getName() + "\" )"
@@ -63,7 +60,7 @@ public class JclreHelper {
                 "___ADDED_STATIC_FIELDS___",
                 ctClass
             );
-            staticField.setModifiers( Modifier.PUBLIC | Modifier.STATIC );
+            staticField.setModifiers( java.lang.reflect.Modifier.PUBLIC | java.lang.reflect.Modifier.STATIC );
             ctClass.addField(
                 staticField,
                 "jclre.instrumentation.Jclre.getInstance().getFieldsCache().createStatic( \"" + ctClass.getName() + "\" )"
@@ -107,7 +104,7 @@ public class JclreHelper {
     public void fixFields( CtClass ctClass, FieldsCompareResult fieldsCompareResult ) {
         for( CtField removedField: fieldsCompareResult.getRemovedFields() ) {
             try {
-                if( Modifier.isStatic( removedField.getModifiers() ) ) {
+                if( java.lang.reflect.Modifier.isStatic( removedField.getModifiers() ) ) {
                     fieldsCache.removeStaticField(
                         ctClass.getName(),
                         makeFieldDef( removedField )
@@ -130,7 +127,7 @@ public class JclreHelper {
         for( CtField addedField: fieldsCompareResult.getAddedFields() ) {
             addedFieldsNames.add( addedField.getName() );
             try {
-                if( Modifier.isStatic( addedField.getModifiers() ) ) {
+                if( java.lang.reflect.Modifier.isStatic( addedField.getModifiers() ) ) {
                     fieldsCache.addStaticField(
                         ctClass.getName(),
                         makeFieldDef( addedField )
@@ -148,7 +145,7 @@ public class JclreHelper {
             }
         }
 
-        analyzer.modifyReadersAndWriters( ctClass, addedFieldsNames );
+        modifier.modifyReadersAndWriters( ctClass, addedFieldsNames );
     }
 
     private FieldDefinition makeFieldDef( CtField ctField ) {

@@ -1,7 +1,7 @@
 package jclre.instrumentation;
 
 import javassist.ClassPool;
-import jclre.bytecode.Analyzer;
+import jclre.bytecode.Modifier;
 import jclre.cache.FieldsCache;
 import jclre.cache.OriginalBytecodeCache;
 import jclre.tool.*;
@@ -25,15 +25,15 @@ public class Jclre {
     private JclreClassRedefiner jclreClassRedefiner;
     private JclreClassTransformer jclreClassTransformer;
     private Reloader reloader;
-    private Analyzer analyzer;
+    private Modifier modifier;
 
     private Jclre( Instrumentation instrumentation ) {
         this.instrumentation = instrumentation;
         classPool = ClassPool.getDefault();
 
-        analyzer = new Analyzer();
+        modifier = new Modifier();
         fieldsCache = new FieldsCache();
-        jclreHelper = new JclreHelper( classPool, fieldsCache, analyzer );
+        jclreHelper = new JclreHelper( classPool, fieldsCache, modifier );
         originalBytecodeCache = new OriginalBytecodeCache( classPool );
         jclreClassRedefiner = new JclreClassRedefiner( classPool, instrumentation );
         reloader = new Reloader( jclreClassRedefiner );
@@ -106,11 +106,11 @@ public class Jclre {
         return jclreClassTransformer;
     }
 
-    public Analyzer getAnalyzer() {
-        if( analyzer == null ) {
+    public Modifier getModifier() {
+        if( modifier == null ) {
             throw new RuntimeException( "not initialized" );
         }
-        return analyzer;
+        return modifier;
     }
 
     public static void init( ) {
