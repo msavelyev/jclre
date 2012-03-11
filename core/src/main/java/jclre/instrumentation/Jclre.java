@@ -35,14 +35,12 @@ public class Jclre {
         fieldsCache = new FieldsCache();
         jclreHelper = new JclreHelper( classPool, fieldsCache, analyzer );
         originalBytecodeCache = new OriginalBytecodeCache( classPool );
-        jclreClassRedefiner = new JclreClassRedefiner( classPool, originalBytecodeCache,  instrumentation,  fieldsCache );
+        jclreClassRedefiner = new JclreClassRedefiner( classPool, instrumentation );
         reloader = new Reloader( jclreClassRedefiner );
         jclreClassTransformer = new JclreClassTransformer( classPool, originalBytecodeCache,  jclreHelper,  fieldsCache );
 
         instrumentation.addTransformer( jclreClassTransformer );
 
-
-//        new OriginalBytecodeCacheInitializer( classPool, instrumentation, originalBytecodeCache ).init();
     }
 
     public static Jclre getInstance() {

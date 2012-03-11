@@ -7,33 +7,39 @@ import javassist.expr.FieldAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 public class Analyzer {
 
     private static final Logger log = LoggerFactory.getLogger( Analyzer.class );
 
-    public Object analyzeInitialValue( CtClass ctClass, final String fieldName ) {
+    public void modifyReadersAndWriters( CtClass ctClass, final List<String> fieldNames ) {
         try {
             ctClass.instrument(
                 new ExprEditor() {
                     @Override
                     public void edit( FieldAccess f ) throws CannotCompileException {
-                        String methodName = f.where().getMethodInfo().getName();
-                        if( f.getFieldName().equals( fieldName ) ) {
+                        String fieldName = f.getFieldName();
+                        if( fieldNames.contains( fieldName ) ) {
+                            String fieldValuesField;
+                            if( f.isStatic() ) {
+                                fieldValuesField = "___ADDED_STATIC_FIELDS___";
+                            } else {
+                                fieldValuesField = "___ADDED_FIELDS___";
+                            }
+
                             if( f.isWriter() ) {
-                                f.replace( "___ADDED_FIELDS___.set( \"" + fieldName + "\", $1 );" );
+                                f.replace( fieldValuesField + ".set( \"" + fieldName + "\", ( $w ) $1 );" );
                             } else if( f.isReader() ) {
-                                f.replace( "$_ = ( $r ) ___ADDED_FIELDS___.get( \"" + fieldName + "\" );" );
+                                f.replace( "$_ = ( $r ) " + fieldValuesField + ".get( \"" + fieldName + "\" );" );
                             }
                         }
-                        log.info( "analyzeInitialValue: " + methodName );
                     }
                 }
             );
         } catch( CannotCompileException e ) {
             log.info( "can't compile", e );
         }
-
-        return null;
     }
 
 }

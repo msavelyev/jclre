@@ -1,4 +1,4 @@
-package jclre;
+package org.example;
 
 public class ByteCode {
 

@@ -1,7 +1,7 @@
-package jclre;
+package org.example;
 
 import jclre.instrumentation.Jclre;
-import jclre.test.Hello;
+import org.example.test.Hello;
 import jclre.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,6 @@ public class Test {
                 public void run() {
                     try {
                         Jclre.getInstance().getReloader().reload( Hello.class );
-//                        Jclre.getInstance().getReloader().reload( Hello.Hello1.class );
                     } catch( Throwable e ) {
                         e.printStackTrace();
                     }
@@ -33,12 +32,14 @@ public class Test {
             10, 10, TimeUnit.SECONDS
         );
 
+        final Hello hello = new Hello();
+
         executorService.scheduleWithFixedDelay(
             new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        log.info( "tick " + new Hello().hello( "world" ) );
+                        log.info( "tick " + hello.hello( "world" ) );
                     } catch( Throwable e ) {
                         e.printStackTrace();
                     }
@@ -46,10 +47,5 @@ public class Test {
             },
             5, 5, TimeUnit.SECONDS
         );
-
-//        executorService.scheduleWithFixedDelay(
-//            new ClassPathMonitor( null ),
-//            1, 2, TimeUnit.SECONDS
-//        );
     }
 }

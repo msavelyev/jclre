@@ -1,4 +1,4 @@
-package jclre.test;
+package org.example.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,19 +14,28 @@ public class Hello {
 
     private AtomicInteger counter = new AtomicInteger();
 
-//    private int a = 2;
-    private String b = "omg";
+//    private static int b = 2;
+//    private String b = "omg";
 //    private int c = 1;
+//    private boolean d = true;
+//    private float e = 5;
+//    private Object d = new Object();
 //    private int d = 1;
 //    private int e = 5;
+//    private Lol lol = new Lol();
 
     public String hello( String something ) {
-        log.info( "b=" + b );
-        b = "wWOW";
-        log.info( "b=" + b );
-        b = "OMG";
-        log.info( "b=" + b );
-        return "Hello, " + something + "! " /*+ counter.incrementAndGet()*/;
+//        log.info( "b=" + b );
+//        b++;
+//        log.info( "b=" + b );
+//        b++;
+//        log.info( "b=" + b );
+
+//        log.info( "b=" + b );
+//        log.info( "c=" + c );
+//        log.info( "d=" + d );
+//        log.info( "e=" + e );
+        return "Hello, " + something + "! ";
     }
 
     public void dump() {
@@ -52,7 +61,7 @@ public class Hello {
 
 //            ClassPool aDefault = ClassPool.getDefault();
 //
-//            CtClass ctClass = aDefault.get( "jclre.test.Hello" );
+//            CtClass ctClass = aDefault.get( "org.example.test.Hello" );
 //            CtMethod[] declaredMethods = ctClass.getDeclaredMethods();
 //            declaredMethods.getClass();
 //            ctClass.defrost();
