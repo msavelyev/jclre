@@ -3,6 +3,8 @@ package jclre.instrumentation;
 import javassist.ClassPool;
 import jclre.bytecode.Modifier;
 import jclre.cache.FieldsCache;
+import jclre.cache.InnerClassNamesCache;
+import jclre.cache.MethodsCache;
 import jclre.cache.OriginalBytecodeCache;
 import jclre.tool.*;
 import org.slf4j.Logger;
@@ -22,10 +24,12 @@ public class Jclre {
     private JclreHelper jclreHelper;
     private OriginalBytecodeCache originalBytecodeCache;
     private FieldsCache fieldsCache;
+    private MethodsCache methodsCache;
     private JclreClassRedefiner jclreClassRedefiner;
     private JclreClassTransformer jclreClassTransformer;
     private Reloader reloader;
     private Modifier modifier;
+    private InnerClassNamesCache innerClassNamesCache;
 
     private Jclre( Instrumentation instrumentation ) {
         this.instrumentation = instrumentation;
@@ -33,7 +37,9 @@ public class Jclre {
 
         modifier = new Modifier();
         fieldsCache = new FieldsCache();
-        jclreHelper = new JclreHelper( classPool, fieldsCache, modifier );
+        methodsCache = new MethodsCache();
+        innerClassNamesCache = new InnerClassNamesCache();
+        jclreHelper = new JclreHelper( classPool, fieldsCache, methodsCache, modifier, innerClassNamesCache );
         originalBytecodeCache = new OriginalBytecodeCache( classPool );
         jclreClassRedefiner = new JclreClassRedefiner( classPool, instrumentation );
         reloader = new Reloader( jclreClassRedefiner );
@@ -48,6 +54,13 @@ public class Jclre {
             throw new RuntimeException( "jclre not initialized" );
         }
         return instance;
+    }
+
+    public InnerClassNamesCache getInnerClassNamesCache() {
+        if( innerClassNamesCache == null ) {
+            throw new RuntimeException( "not initialized" );
+        }
+        return innerClassNamesCache;
     }
 
     public Reloader getReloader() {
@@ -111,6 +124,13 @@ public class Jclre {
             throw new RuntimeException( "not initialized" );
         }
         return modifier;
+    }
+
+    public MethodsCache getMethodsCache() {
+        if( methodsCache == null ) {
+            throw new RuntimeException( "not initialized" );
+        }
+        return methodsCache;
     }
 
     public static void init( ) {

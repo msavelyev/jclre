@@ -13,4 +13,15 @@ public class ByteCode {
         b = 3;
     }
 
+    private void b() {
+
+    }
+
+    private class A {
+        private A() {
+            b();
+            System.out.println( b );
+        }
+    }
+
 }

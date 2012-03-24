@@ -35,6 +35,7 @@ public class Hello {
 //        log.info( "c=" + c );
 //        log.info( "d=" + d );
 //        log.info( "e=" + e );
+//        return "Hello, " + rofl() + " " + something + "! ";
         return "Hello, " + something + "! ";
     }
 
@@ -88,9 +89,13 @@ public class Hello {
 //    public String rofl() {
 //        return "rofl";
 //    }
+//
+//    public String rofl1() {
+//        return "rofl1";
+//    }
 
-    public static class Hello2 {
-        static String a() {
+    public class Hello2 {
+        public String a() {
             return "a";
         }
     }

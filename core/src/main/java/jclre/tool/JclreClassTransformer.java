@@ -3,7 +3,7 @@ package jclre.tool;
 import javassist.*;
 import jclre.cache.FieldsCache;
 import jclre.cache.OriginalBytecodeCache;
-import jclre.tool.helper.FieldsCompareResult;
+import jclre.tool.helper.CompareResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,11 +47,12 @@ public class JclreClassTransformer implements ClassFileTransformer {
             CtClass newClass = jclreHelper.createCtClass( classfileBuffer );
             newClass.detach();
             jclreHelper.addFields( newClass );
+            jclreHelper.addMethods( newClass );
 
-            for( CtField f: newClass.getDeclaredFields() ) {
-                log.info( "new field: " + f.getName() );
-            }
+            jclreHelper.dumpFields( newClass, log, "new field" );
+            jclreHelper.dumpMethods( newClass, log, "new method" );
 
+            CompareResult<CtMethod> methodsCompareResult = new CompareResult<CtMethod>();
             if( !originalBytecodeCache.contains( className ) ) {
                 log.info( "first time " + className );
                 originalBytecodeCache.put( className, classfileBuffer );
@@ -62,21 +63,19 @@ public class JclreClassTransformer implements ClassFileTransformer {
                 oldClass.detach();
                 jclreHelper.addFields( oldClass );
 
-                for( CtField f: oldClass.getDeclaredFields() ) {
-                    log.info( "old field: " + f.getName() );
-                }
+                jclreHelper.dumpFields( oldClass, log, "old field" );
+                jclreHelper.dumpMethods( oldClass, log, "old method" );
 
-                FieldsCompareResult fieldsCompareResult = jclreHelper.compareFields( newClass, oldClass );
+                CompareResult<CtField> compareResult = jclreHelper.compareFields( newClass, oldClass );
 
-                jclreHelper.fixFields( newClass, fieldsCompareResult );
-                for( CtField f: newClass.getDeclaredFields() ) {
-                    log.info( "compared field: " + f.getName() );
-                }
+                methodsCompareResult = jclreHelper.compareMethods( newClass, oldClass );
+
+                jclreHelper.fixFields( newClass, compareResult );
             }
 
-            for( CtField f: newClass.getDeclaredFields() ) {
-                log.info( "modified field: " + f.getName() );
-            }
+            jclreHelper.fixMethods( newClass, methodsCompareResult );
+            jclreHelper.dumpFields( newClass, log, "fixed field" );
+            jclreHelper.dumpMethods( newClass, log, "fixed method" );
 
             return newClass.toBytecode();
         } catch( CannotCompileException e ) {
