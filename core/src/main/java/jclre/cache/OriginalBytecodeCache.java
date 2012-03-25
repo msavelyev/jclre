@@ -2,8 +2,6 @@ package jclre.cache;
 
 import javassist.ClassPool;
 import javassist.CtClass;
-import jclre.instrumentation.Jclre;
-import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,11 +1,11 @@
 package jclre.tool;
 
 import javassist.*;
-import jclre.cache.FieldsCache;
-import jclre.cache.OriginalBytecodeCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
@@ -50,6 +50,26 @@ public class JclreClassRedefiner {
             log.error( "io " + clazz.getName(), e );
         } catch( RuntimeException e ) {
             log.error( "runtime " + clazz.getName(), e );
+        }
+    }
+
+    public void redefine( File file ) throws IOException {
+        try {
+            CtClass ctClass = classPool.makeClass( new FileInputStream( file ) );
+            ctClass.detach();
+
+            instrumentation.redefineClasses(
+                new ClassDefinition(
+                    ctClass.toClass(),
+                    ctClass.toBytecode()
+                )
+            );
+        } catch( ClassNotFoundException e ) {
+            log.error( "not found", e );
+        } catch( UnmodifiableClassException e ) {
+            log.error( "unmodifiable", e );
+        } catch( CannotCompileException e ) {
+            log.error( "can't compile", e );
         }
     }
 

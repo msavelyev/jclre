@@ -3,8 +3,6 @@ package jclre.tool;
 import javassist.*;
 import javassist.Modifier;
 import javassist.bytecode.MethodInfo;
-import javassist.compiler.Javac;
-import jclre.bytecode.*;
 import jclre.cache.FieldsCache;
 import jclre.cache.InnerClassNamesCache;
 import jclre.cache.MethodsCache;
@@ -16,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,12 +47,13 @@ public class JclreHelper {
     }
 
     public boolean systemClassName( String className ) {
-        List<String> systemPrefixes = Arrays.asList( "java.", "sun.", "jclre.", "org.slf4j.", "ch.qos.", "com.apple.", "com.intellij." );
-        for( String systemPrefx: systemPrefixes ) {
-            if( className.startsWith( systemPrefx ) ) {
+        String nonSystemPackage = System.getProperty( "jclre.nonSystemPackage", "org.example." );
+//        List<String> systemPrefixes = Arrays.asList( "java.", "sun.", "jclre.", "org.slf4j.", "ch.qos.", "com.apple.", "com.intellij.", "org.apache.", "junit.", "org.junit.", "$Proxy" );
+//        for( String systemPrefx: systemPrefixes ) {
+            if( !className.startsWith( nonSystemPackage ) ) {
                 return true;
             }
-        }
+//        }
         return false;
     }
 
@@ -241,9 +239,10 @@ public class JclreHelper {
         }
 
         String generatedName = innerClassNamesCache.generate( newClass.getName() );
+        log.info( "generatedInnerName for " + newClass.getName() + " = " + generatedName );
         CtClass innerClass = newClass.makeNestedClass( generatedName, true );
         try {
-            CtClass superclass = classPool.get( "jclre.modify.MethodsAccessor" );
+            CtClass superclass = classPool.get( "jclre.modify.ClassMethods" );
             innerClass.setSuperclass( superclass );
 
             innerClass.addConstructor( CtNewConstructor.defaultConstructor( innerClass ) );
@@ -264,7 +263,7 @@ public class JclreHelper {
             newField.setModifiers( Modifier.PUBLIC );
             newClass.addField(
                 newField,
-                "jclre.instrumentation.Jclre.getInstance().getMethodsCache().create( " + newClass.getName() + "\" )"
+                "jclre.instrumentation.Jclre.getInstance().getMethodsCache().create( this )"
             );
         } catch( CannotCompileException e ) {
             log.error( "can't compile", e );
@@ -286,22 +285,22 @@ public class JclreHelper {
     }
 
     public void addMethods( CtClass newClass ) {
-        try {
-            CtMethod ctMethod = CtNewMethod.make(
-                "public Object get( String fieldName ) {" +
-                    "       Field declaredField = getClass().getDeclaredField( fieldName );" +
-                    "       declaredField.setAccessible( true );" +
-                    "       return declaredField.get( this );" +
-                    "   try {" +
-                    "   } catch( Exception e ) {" +
-                    "       throw new RuntimeException( e );" +
-                    "   }" +
-                    "}",
-                newClass
-            );
-            newClass.addMethod( ctMethod );
-        } catch( CannotCompileException e ) {
-            log.error( "can't compile", e );
-        }
+//        try {
+//            CtMethod ctMethod = CtNewMethod.make(
+//                "public Object get( String fieldName ) {" +
+//                    "   try {" +
+//                    "       java.lang.reflect.Field declaredField = getClass().getDeclaredField( fieldName );" +
+//                    "       declaredField.setAccessible( true );" +
+//                    "       return declaredField.get( this );" +
+//                    "   } catch( Exception e ) {" +
+//                    "       throw new RuntimeException( e );" +
+//                    "   }" +
+//                    "}",
+//                newClass
+//            );
+//            newClass.addMethod( ctMethod );
+//        } catch( CannotCompileException e ) {
+//            log.error( "can't compile", e );
+//        }
     }
 }

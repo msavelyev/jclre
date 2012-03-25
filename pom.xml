@@ -9,8 +9,8 @@
     <packaging>pom</packaging>
     <version>0.1-SNAPSHOT</version>
     <modules>
-        <module>agent</module>
         <module>core</module>
+        <module>test</module>
     </modules>
 
 

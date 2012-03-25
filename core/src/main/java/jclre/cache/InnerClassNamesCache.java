@@ -10,9 +10,9 @@ public class InnerClassNamesCache {
 
     public String generate( String forClassName ) {
         if( cache.containsKey( forClassName ) ) {
-            Integer counter = cache.get( forClassName );
+            int counter = cache.get( forClassName );
             cache.put( forClassName, counter + 1 );
-            return "Inner" + counter;
+            return "Inner" + ( counter + 1 );
         } else {
             cache.put( forClassName, 1 );
             return "Inner1";

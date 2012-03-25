@@ -1,14 +1,10 @@
 package jclre.tool;
 
-import javassist.CannotCompileException;
 import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.NotFoundException;
 import jclre.cache.OriginalBytecodeCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
 import java.util.Arrays;
